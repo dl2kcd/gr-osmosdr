@@ -38,6 +38,8 @@ GEN_BLOCK_YAML(gen_osmosdr_blocks.py    osmosdr_sink.block.yml)
 
 add_custom_target(osmosdr_grc_yaml_blocks ALL DEPENDS ${yaml_blocks})
 
+list(APPEND yaml_blocks sdrplay_source.yml)
+
 install(FILES
     ${yaml_blocks}
     DESTINATION share/gnuradio/grc/blocks
