@@ -94,6 +94,7 @@ sdrplay_source_c::sdrplay_source_c (const std::string &args)
   _fsHz(2e6),
   _decim(1),
   _rfHz(100e6),
+  _ppm(0.0),
   _bwType(mir_sdr_BW_1_536),
   _ifType(mir_sdr_IF_Zero),
   _loMode(mir_sdr_LO_Auto),
@@ -502,12 +503,14 @@ double sdrplay_source_c::get_center_freq(size_t chan)
 
 double sdrplay_source_c::set_freq_corr(double ppm, size_t chan)
 {
-  return get_freq_corr( chan );
+  _ppm = ppm;
+  mir_sdr_SetPpm(_ppm);
+  return _ppm;
 }
 
 double sdrplay_source_c::get_freq_corr(size_t chan)
 {
-  return 0;
+  return _ppm;
 }
 
 std::vector<std::string> sdrplay_source_c::get_gain_names(size_t chan)

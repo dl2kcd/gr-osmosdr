@@ -153,6 +153,7 @@ private:
    double _fsHz;
    int _decim;
    double _rfHz;
+   double _ppm;
    mir_sdr_Bw_MHzT _bwType;
    mir_sdr_If_kHzT _ifType;
    mir_sdr_LoModeT _loMode;
