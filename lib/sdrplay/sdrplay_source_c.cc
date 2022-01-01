@@ -369,6 +369,9 @@ void sdrplay_source_c::startStreaming(void)
     mir_sdr_rsp1a_BroadcastNotch(_bcastNotch);
     mir_sdr_rsp1a_DabNotch(_dabNotch);
   }
+
+  // workaround: mir_sdr_Reinit() clears ppm when setting antenna
+  mir_sdr_SetPpm(_ppm);
 }
 
 void sdrplay_source_c::stopStreaming(void)

@@ -549,7 +549,7 @@ double source_impl::set_freq_corr( double ppm, size_t chan )
   BOOST_FOREACH( source_iface *dev, _devs )
     for (size_t dev_chan = 0; dev_chan < dev->get_num_channels(); dev_chan++)
       if ( chan == channel++ ) {
-        if ( _freq_corr[ chan ] != ppm ) {
+        if ( (_freq_corr.count(chan) == 0) || (_freq_corr[ chan ] != ppm) ) {
           _freq_corr[ chan ] = ppm;
           return dev->set_freq_corr( ppm, dev_chan );
         } else { return _freq_corr[ chan ]; }
