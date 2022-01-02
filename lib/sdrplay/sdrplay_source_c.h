@@ -144,6 +144,8 @@ private:
                                  unsigned int hwRemoved, void *cbContext);
   static void gainChangeCallbackWrap(unsigned int gRdB, unsigned int lnaGRdB, void *cbContext);
 
+  mir_sdr_Bw_MHzT selectedBandwidthType(void);
+
    bool _auto_gain;
    int _gain;
    int _gRdB;

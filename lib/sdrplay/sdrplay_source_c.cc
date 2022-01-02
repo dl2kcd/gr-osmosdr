@@ -337,7 +337,7 @@ void sdrplay_source_c::startStreaming(void)
   mir_sdr_StreamInit(&gRdB,
                      _fsHz / 1e6,
                      _rfHz / 1e6,
-                     _bwType,
+                     selectedBandwidthType(),
                      _ifType,
                      checkLNA(_lna),
                      &gRdBsystem,
@@ -408,7 +408,7 @@ void sdrplay_source_c::reinitDevice(int reason)
   mir_sdr_Reinit(&gRdB,
                  _fsHz / 1e6,
                  _rfHz / 1e6,
-                 _bwType,
+                 selectedBandwidthType(),
                  _ifType,
                  _loMode,
                  checkLNA(_lna),
@@ -814,9 +814,32 @@ void sdrplay_source_c::set_iq_balance_mode(int mode, size_t chan)
   mir_sdr_DCoffsetIQimbalanceControl(_dcMode, _iqMode);
 }
 
+mir_sdr_Bw_MHzT sdrplay_source_c::selectedBandwidthType(void)
+{
+    double bwx = 0.;
+
+    // use user supplied _bwType if defined
+    if (_bwType != mir_sdr_BW_Undefined )
+        return _bwType;
+
+    // find default bandwidth based on decimated sample rate
+    for (double bw : bandwidths) {
+        if (bw <= (_fsHz / _decim))
+            bwx = bw;
+        else
+            break;
+    }
+
+    // return smallest possible BW type for lower rates
+    if (bwx == 0.)
+        return mir_sdr_BW_0_200;
+
+    return (mir_sdr_Bw_MHzT)(bwx/1e3);
+}
+
 double sdrplay_source_c::set_bandwidth(double bandwidth, size_t chan)
 {
-  _bwType = mir_sdr_BW_8_000;
+  _bwType = mir_sdr_BW_Undefined;
 
   for (double bw : bandwidths) {
     // Skip dummy value at index 0
@@ -826,6 +849,10 @@ double sdrplay_source_c::set_bandwidth(double bandwidth, size_t chan)
       _bwType = (mir_sdr_Bw_MHzT)(bw/1e3);
       break;
     }
+  }
+
+  if (bandwidth == 0.) { // user wants automatic selection
+    _bwType = mir_sdr_BW_Undefined;
   }
 
   int actual = get_bandwidth(chan);
@@ -841,7 +868,7 @@ double sdrplay_source_c::set_bandwidth(double bandwidth, size_t chan)
 
 double sdrplay_source_c::get_bandwidth(size_t chan)
 {
-  return (double)_bwType * 1e3;
+  return (double)selectedBandwidthType() * 1e3;
 }
 
 osmosdr::freq_range_t sdrplay_source_c::get_bandwidth_range(size_t chan)
